@@ -11,8 +11,11 @@ Developed for TrueLayer
 """
 
 import argparse, requests, validators, json 
+from multiprocessing import Pool 
 from math import ceil 
 from lxml import html
+
+MAX_NUM_POSTS = 400 
 
 ###############################################################################
 # Classes 
@@ -27,24 +30,34 @@ class HNScraper:
 	STORY_LIST = []
 
 	def __init__(self, num_posts):
-			if num_posts > 100: 
-				err_string = 'Please enter a number < 100'
-				raise ValueError(err_string)
-			else:
-				self._num_posts = num_posts
-				self._num_pages = int(ceil(num_posts
-							/ self.PER_PAGE)) 
-	
-	def fetch_content(self):
+		if num_posts > MAX_NUM_POSTS: 
+			err_string = 'Please enter a number less than {}'
+			raise ValueError(err_string.format(MAX_NUM_POSTS))
+		else:
+			self._num_posts = num_posts
+			self._num_pages = int(ceil(num_posts
+						/ self.PER_PAGE))
+
+	def fetch_content(self, num_threads):
 		"""
 		Method will iterate over url/pages and add 
 		dictionary objects (stories) to an internal list 
 		"""
+		urls = []
 		iter_num = 1  
 		while(iter_num <= self._num_pages):
 			url = "{}?p={}".format(self.BASEURL, iter_num)
-			self.parse_stories(get_html_table(url))	
+			if num_threads:
+				urls.append(url)
+			else:
+				table = get_html_table(get_request(url)) 
+				self.parse_stories(table)	
 			iter_num += 1
+
+		if num_threads:
+			p = Pool(num_threads)
+			results = p.map(get_request, urls) 
+			map(self.parse_stories, map(get_html_table, results))
 	
 	def parse_stories(self, table):	
 		"""
@@ -83,17 +96,22 @@ class HNScraper:
 		json_data = json.dumps(self.STORY_LIST, indent=indentation) 
 		print json_data
 
-
 ###############################################################################
 # Functions
 ###############################################################################
-def get_html_table(url):
-	""" 
-	Static Method to Retrive HTML Table from URL
+def get_request(url):	
+	"""
+	Returns Response When Given a URL to Request  
 	"""
 	response = requests.get(url, stream=True)
 	if response.status_code != requests.codes.ok:
 		response.raise_for_status()
+	return response 
+
+def get_html_table(response):
+	""" 
+	Method to Retrive HTML Table from URL
+	"""
 	tree = html.fromstring(response.text)
 	tables = tree.cssselect("table[class=itemlist]")
 	
@@ -139,22 +157,27 @@ def parse_arguments():
 			    default=100, help='number of posts')
 	parser.add_argument('--ident', '-i', metavar='n', type=int, 
 			    default=4, help='identation of JSON')
+	parser.add_argument('--multi', '-m', metavar='n', type=int, 
+			    default=0, help='number of threads')
 	args = parser.parse_args()
-	return args.posts, args.ident
+	return args.posts, args.multi, args.ident
 
 ###############################################################################
 # Main
 ###############################################################################
 def main():
-	NUM_POSTS, INDENT = parse_arguments()
+	NUM_POSTS, NUM_THREADS, INDENT = parse_arguments()
 	try:
 		hnScraper = HNScraper(NUM_POSTS)
-		hnScraper.fetch_content()
+		hnScraper.fetch_content(NUM_THREADS)
 		hnScraper.json_print(indentation=INDENT)
 	
-	except ValueError as v:
-		err_string = '{} \nMaximum Posts : 100 \nRequested : {}'
-		print err_string.format(v, NUM_POSTS) 				
+	except ValueError as ex:
+		err_string = '{} \nMaximum Posts : {} \nRequested : {}'
+		print err_string.format(ex, MAX_NUM_POSTS, NUM_POSTS) 				
 
+###############################################################################
+# Global 
+###############################################################################
 if __name__ == "__main__":
 	main()
