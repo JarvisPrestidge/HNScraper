@@ -156,7 +156,7 @@ def main():
 	
 	except ValueError as v:
 		err_string = '{} \nMaximum Posts : 100 \nRequested : {}'
-		err_string.format(v, NUM_POSTS) 				
+		print err_string.format(v, NUM_POSTS) 				
 
 if __name__ == "__main__":
 	main()
