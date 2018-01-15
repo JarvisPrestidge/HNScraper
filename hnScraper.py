@@ -57,7 +57,8 @@ class HNScraper:
 		if num_threads:
 			p = Pool(num_threads)
 			results = p.map(get_request, urls) 
-			map(self.parse_stories, map(get_html_table, results))
+			map(self.parse_stories,
+				 map(get_html_table, results))
 	
 	def parse_stories(self, table):	
 		"""
@@ -101,7 +102,7 @@ class HNScraper:
 ###############################################################################
 def get_request(url):	
 	"""
-	Returns Response When Given a URL to Request  
+	Returns Response When Given a URL Request  
 	"""
 	response = requests.get(url, stream=True)
 	if response.status_code != requests.codes.ok:
@@ -110,7 +111,7 @@ def get_request(url):
 
 def get_html_table(response):
 	""" 
-	Method to Retrive HTML Table from URL
+	Method to Retrive HTML Table from Response 
 	"""
 	tree = html.fromstring(response.text)
 	tables = tree.cssselect("table[class=itemlist]")
