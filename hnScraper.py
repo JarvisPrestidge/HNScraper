@@ -155,8 +155,8 @@ def main():
 		hnScraper.json_print(indentation=INDENT)
 	
 	except ValueError as v:
-		print v	
-		print 'Maximum Posts : 100 \nRequested : {}'.format(NUM_POSTS) 				
+		err_string = '{} \nMaximum Posts : 100 \nRequested : {}'
+		err_string.format(v, NUM_POSTS) 				
 
 if __name__ == "__main__":
 	main()
