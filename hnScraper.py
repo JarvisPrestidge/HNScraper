@@ -43,35 +43,9 @@ class HNScraper:
 		iter_num = 1  
 		while(iter_num <= self._num_pages):
 			url = "{}?p={}".format(self.BASEURL, iter_num)
-			self.parse_stories(self, self.get_table(url))	
+			self.parse_stories(get_html_table(url))	
 			iter_num += 1
-
-	def json_print(self, indentation):
-		"""
-		Prints list of dictionary objects (stories) in JSON format 
-		"""
-		json_data = json.dumps(self.STORY_LIST, indent=indentation) 
-		print json_data
-
-	@staticmethod
-	def get_table(url):
-		""" 
-		Static Method to Retrive HTML Table from URL
-		"""
-		response = requests.get(url, stream=True)
-		if response.status_code != requests.codes.ok:
-			response.raise_for_status()
-		tree = html.fromstring(response.text)
-		tables = tree.cssselect("table[class=itemlist]")
-		
-		if len(tables) != 1:
-			err_string = 'Retrieved {} tables, expected 1'
-			print err_string.format(len(tables))
-			return
-		
-		return tables[0]
-
-	@staticmethod
+	
 	def parse_stories(self, table):	
 		"""
 		Given a HTML Table, the relevant data will be parsed
@@ -98,40 +72,64 @@ class HNScraper:
 				'rank' : self.STORY_COUNT	
 				}
 
-			story = self.validate_fields(self, story, 
-						     points, comments)
+			story = validate_fields(story, points, comments)
 			
 			self.STORY_LIST.append(story) 
-
-	check_for_digits = lambda self, x: [int(s) for s in x.split()
-						   if s.isdigit()] 
-	@staticmethod
-	def validate_fields(self, story, points, comments) :	
+	
+	def json_print(self, indentation):
 		"""
-		Validates data to meet requirements
+		Prints list of dictionary objects (stories) in JSON format 
 		"""
-		points = self.check_for_digits(points)
-		comments = self.check_for_digits(comments) 
+		json_data = json.dumps(self.STORY_LIST, indent=indentation) 
+		print json_data
 
-		points = points[0] if len(points) > 0 else 0 
-		comments = comments[0] if len(comments) > 0 else 0 
-		
-		story['points'] , story['comments'] = points, comments 
-		
-		if len(story['title']) not in range(1,257):
-			story['title'] = 'NA'
-		
-		if len(story['author']) not in range(1,257):
-			story['author'] = 'NA'
-		
-		if not validators.url(story['uri']):
-			story['uri'] = 'NA'
-
-		return story 
 
 ###############################################################################
 # Functions
 ###############################################################################
+def get_html_table(url):
+	""" 
+	Static Method to Retrive HTML Table from URL
+	"""
+	response = requests.get(url, stream=True)
+	if response.status_code != requests.codes.ok:
+		response.raise_for_status()
+	tree = html.fromstring(response.text)
+	tables = tree.cssselect("table[class=itemlist]")
+	
+	if len(tables) != 1:
+		err_string = 'Retrieved {} tables, expected 1'
+		print err_string.format(len(tables))
+		return
+	
+	return tables[0]
+
+def validate_fields(story, points, comments) :	
+	"""
+	Validates data to meet requirements
+	"""
+	
+	check_for_digits = lambda x: [int(s) for s in x.split()
+				  	     if s.isdigit()] 
+	points = check_for_digits(points)
+	comments = check_for_digits(comments) 
+
+	points = points[0] if len(points) > 0 else 0 
+	comments = comments[0] if len(comments) > 0 else 0 
+	
+	story['points'] , story['comments'] = points, comments 
+	
+	if len(story['title']) not in range(1,257):
+		story['title'] = 'NA'
+	
+	if len(story['author']) not in range(1,257):
+		story['author'] = 'NA'
+	
+	if not validators.url(story['uri']):
+		story['uri'] = 'NA'
+
+	return story 
+
 def parse_arguments():
 	"""
 	This function parses command line arguments 
