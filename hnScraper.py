@@ -34,6 +34,7 @@ class HNScraper:
 				self._num_posts = num_posts
 				self._num_pages = int(ceil(num_posts
 							/ self.PER_PAGE)) 
+	
 	def fetch_content(self):
 		"""
 		Method will iterate over url/pages and add 
@@ -117,10 +118,10 @@ class HNScraper:
 		
 		story['points'] , story['comments'] = points, comments 
 		
-		if len(story['title']) not in range(1,256):
+		if len(story['title']) not in range(1,257):
 			story['title'] = 'NA'
 		
-		if len(story['author']) not in range(1,256):
+		if len(story['author']) not in range(1,257):
 			story['author'] = 'NA'
 		
 		if not validators.url(story['uri']):
@@ -149,7 +150,6 @@ def parse_arguments():
 def main():
 	NUM_POSTS, INDENT = parse_arguments()
 	try:
-
 		hnScraper = HNScraper(NUM_POSTS)
 		hnScraper.fetch_content()
 		hnScraper.json_print(indentation=INDENT)
