@@ -23,16 +23,14 @@ This is a compatible version. The reason for choosing `Python 2` was due to my o
 
 ##### Modules Required 
 
-The following Python modules will be required:
+The following Python modules will need to be installed (via `pip`):
 
-- `argparse` 
 - `requests`
-- `validators`
-- `json` 
-- `multiprocessing` 
 - `lxml` 
+- `validators`
+- `multiprocessing` 
 
-Two other modules are used which are `math` and `unittest`. They should be installed with your distribution of Python. If not please follow the procedure that will allow you to install any Python module.
+Standard libraries are used which are: `math`, `json`, `argparse` and `unittest`. They should be installed with your distribution of Python. 
 
 We are going to use a package management system called `pip`. First we need to install it by running the following:
 ```
@@ -56,17 +54,17 @@ sudo pip install -r <requirement file>
 ##### Options (Command Line Arguments)
 
 - `--posts [n] `, `-p [n]`  : Number of Posts to be Scraped
-- `--multi [n] `, `-m [n]` : Number of Threads to be Used
+- `--multi [n] `, `-m [n]` : Number of Processes to be Used
 - `--indent[n] `, `-i [n]` : Indentation Level for JSON Output 
 
 N.B. In all cases `[n]` must be an integer, for number of posts (`--posts`) this number should be between `0` and `MAX_POSTS`. 
 
-`MAX_POSTS` can be amended within the code only. It has been set to `200`, this can be increased to better test multithreading and thus the scalability.
+`MAX_POSTS` can be amended within the code only. It has been set to `200`, this can be increased to better test `multiprocessing` and thus the scalability. However, this is a simplistic use of multiple processes rather than sophisticated concurrency.
 
 ##### Expected Behaviour and Defaults 
 
 - If you pass `--posts [n]` > `MAX_POSTS` it will raise a ValueError. 
-- Thread count has been capped to `20` 
+- Process count has been capped to `20` 
 - Indentation level has been capped to `10` 
 - If you pass no arguments the default values will be used 
 - Defaults : `--posts [100]`, `--multi[0]`, `--indent[4]`
@@ -87,4 +85,24 @@ OK
 
 ### Library Choice 
 
+##### `requests`
+- `requests` is a simple and efficient `HTTP` library and supports RESTful `API`. 
+- There is no need to use `urllib2` since we only need to make a `GET` request.
+- It also takes care of decoding the response into Unicode automatically.
 
+##### `lxml`
+- `lxml` is a high performance, production quality XML library.
+-  `lxml` has considerable better performance over other libraries such as `BeautifulSoup` which means this solution is scalable. 
+-  There is a caveat that the source should be expected have good structure otherwise `BeautifulSoup` may be a better choice. 
+-  Since we know the source is well structured, to improve performance `lxml` has been selected. 
+-   As previously mentioned it's fast, easy to use and has a variety of features.
+
+##### `validators`
+- There are better options for URL validation such as those contained in `django`
+- The reason for this choice was due to ease of use. 
+- In terms of URL validation it is probably better to design your own. 
+
+##### `multiprocessing` 
+- `multiprocessing` module is easier to integrate into code.
+- This is a simplistic attempt to increase speed via multiple processes. 
+- If we needed to increase speed dramatically this is not the best module.
