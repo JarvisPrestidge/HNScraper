@@ -189,7 +189,7 @@ def main():
 		hnScraper.fetch_content(NUM_PROCS)
 		hnScraper.json_print(indentation=INDENT)
 	
-	except ValueError as ex:
+	except argparse.ArgumentTypeError as ex:
 		err_string = 'Maximum Argument Exceeded \n{}'
 		print err_string.format(ex) 				
 
