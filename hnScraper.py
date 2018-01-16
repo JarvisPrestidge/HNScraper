@@ -15,7 +15,7 @@ from multiprocessing import Pool
 from math import ceil 
 from lxml import html
 
-MAX_NUM_POSTS = 400 
+MAX_NUM_POSTS = 200 
 
 ###############################################################################
 # Classes 
