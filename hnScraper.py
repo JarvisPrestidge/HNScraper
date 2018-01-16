@@ -162,12 +162,18 @@ def parse_arguments():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--posts', '-p', metavar='n', type=int, 
 			    default=100, help='number of posts')
-	parser.add_argument('--ident', '-i', metavar='n', type=int, 
+	parser.add_argument('--indent', '-i', metavar='n', type=int, 
 			    default=4, help='identation of JSON')
 	parser.add_argument('--multi', '-m', metavar='n', type=int, 
 			    default=0, help='number of processes')
 	args = parser.parse_args()
-	return args.posts, args.multi, args.ident
+
+	if args.multi > 20: 
+		raise argparse.ArgumentTypeError('Processes must be < 20')
+	if args.indent > 10: 
+		raise argparse.ArgumentTypeError('Indentation must be < 10')
+
+	return args.posts, args.multi, args.indent
 
 ###############################################################################
 # Main
