@@ -123,14 +123,17 @@ def get_html_table(response):
 	
 	return tables[0]
 
-"""
-1. Find numbers from scraped data, add to list 
-2. Validate the list of numbers is non empty
-3. Select the valid number by index i 
-""" 
-find_numbers = lambda x: [int(s) for s in x.split() if s.isdigit()] 
-valid_number = lambda x: True if len(x) > 0 else False
-select_number = lambda x,i: x[i] if valid_number(x) else 0 
+def find_valid_number(input):
+	"""
+	Method will find numbers from scraped data
+	append to list and select the first valid 
+	"""
+	numbers = [int(s) for s in input.split()
+				if s.isdigit()]
+	if len(numbers) > 0:
+		return numbers[0]
+
+	return 0 
 
 #Check Whether Length of String is between 1 - 256 
 valid_string = lambda x: True if len(x) in range(1,257) else False 
@@ -142,8 +145,8 @@ def validate_fields(story, points, comments) :
 	"""
 	Validates data to meet requirements
 	"""
-	story['points'] = select_number(find_numbers(points), 0)
-	story['comments'] = select_number(find_numbers(comments), 0) 
+	story['points'] = find_valid_number(points)
+	story['comments'] = find_valid_number(comments)
 	
 	if not valid_string(story['title']):
 		story['title'] = 'NA'
