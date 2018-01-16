@@ -63,9 +63,11 @@ N.B. In all cases `[n]` must be an integer, for number of posts (`--posts`) this
 
 ##### Expected Behaviour and Defaults 
 
-- If you pass `--posts [n]` > `MAX_POSTS` it will raise a ValueError. 
+- Number of posts has been capped to `200` 
 - Process count has been capped to `20` 
 - Indentation level has been capped to `10` 
+- If you exceed these values it will raise an ArgumentTypeError
+- They can only be amended via a code change 
 - If you pass no arguments the default values will be used 
 - Defaults : `--posts [100]`, `--multi[0]`, `--indent[4]`
 
