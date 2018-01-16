@@ -15,7 +15,9 @@ from multiprocessing import Pool
 from math import ceil 
 from lxml import html
 
-MAX_NUM_POSTS = 200 
+MAX_POSTS = 200 
+MAX_PROCS = 20 
+MAX_INDENT = 10 
 
 ###############################################################################
 # Classes 
@@ -30,13 +32,9 @@ class HNScraper:
 	STORY_LIST = []
 
 	def __init__(self, num_posts):
-		if num_posts > MAX_NUM_POSTS: 
-			err_string = 'Please enter a number less than {}'
-			raise ValueError(err_string.format(MAX_NUM_POSTS))
-		else:
-			self._num_posts = num_posts
-			self._num_pages = int(ceil(num_posts
-						/ self.PER_PAGE))
+		self._num_posts = num_posts
+		self._num_pages = int(ceil(num_posts
+					/ self.PER_PAGE))
 
 	def fetch_content(self, num_procs):
 		"""
@@ -162,16 +160,21 @@ def parse_arguments():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--posts', '-p', metavar='n', type=int, 
 			    default=100, help='number of posts')
+	parser.add_argument('--multi', '-m', metavar='n', type=int, 
+			    default=0, help='number of processes')	
 	parser.add_argument('--indent', '-i', metavar='n', type=int, 
 			    default=4, help='identation of JSON')
-	parser.add_argument('--multi', '-m', metavar='n', type=int, 
-			    default=0, help='number of processes')
 	args = parser.parse_args()
 
-	if args.multi > 20: 
-		raise argparse.ArgumentTypeError('Processes must be < 20')
-	if args.indent > 10: 
-		raise argparse.ArgumentTypeError('Indentation must be < 10')
+	if args.posts > MAX_POSTS:	
+		err_string = "Number of Posts Must Be < {}"
+		raise argparse.ArgumentTypeError(err_string.format(MAX_POSTS))
+	if args.multi > MAX_PROCS: 	
+		err_string = "Number of Processes Must Be < {}"
+		raise argparse.ArgumentTypeError(err_string.format(MAX_PROCS))
+	if args.indent > MAX_INDENT: 
+		err_string = "Indentation Level Must Be < {}"
+		raise argparse.ArgumentTypeError(err_string.format(MAX_INDENT))
 
 	return args.posts, args.multi, args.indent
 
@@ -179,15 +182,16 @@ def parse_arguments():
 # Main
 ###############################################################################
 def main():
-	NUM_POSTS, NUM_PROCS, INDENT = parse_arguments()
 	try:
+		NUM_POSTS, NUM_PROCS, INDENT = parse_arguments()
+		
 		hnScraper = HNScraper(NUM_POSTS)
 		hnScraper.fetch_content(NUM_PROCS)
 		hnScraper.json_print(indentation=INDENT)
 	
 	except ValueError as ex:
-		err_string = '{} \nMaximum Posts : {} \nRequested : {}'
-		print err_string.format(ex, MAX_NUM_POSTS, NUM_POSTS) 				
+		err_string = 'Maximum Argument Exceeded \n{}'
+		print err_string.format(ex) 				
 
 ###############################################################################
 # Global 
