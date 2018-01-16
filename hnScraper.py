@@ -130,15 +130,11 @@ def find_valid_number(input):
 	"""
 	numbers = [int(s) for s in input.split()
 				if s.isdigit()]
-	if len(numbers) > 0:
-		return numbers[0]
+	
+	return numbers[0] if len(numbers) > 0 else 0 
 
-	return 0 
-
-#Check Whether Length of String is between 1 - 256 
 valid_string = lambda x: True if len(x) in range(1,257) else False 
 
-#Check Whether the URI has valid form 
 valid_uri = lambda x: True if validators.url(x) else False
 
 def validate_fields(story, points, comments) :	
