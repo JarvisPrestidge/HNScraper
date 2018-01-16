@@ -6,19 +6,19 @@
 
 ##### Python 
 
-If you do not have Python installed please make sure you do so. The version required to run this is `2.7`. 
+If you do not have Python installed please make sure you do. The version required to run this is `2.7`. 
 
 [Installing Python from Scratch](https://wiki.python.org/moin/BeginnersGuide/Download)
 
-After you have done so please verify your version of Python installed via Command Line. Please run the following: 
+After you have Python (2.7) installed please verify your version of Python installed via Command Line. Please run the following: 
 ```
 python -V 
 ```
-For example, when I do so `stdout` produces:
+For example, when I run this `stdout` produces:
 ```
 Python 2.7.10
 ```
-This is a compatible version. The reason for choosing `Python 2` was due to my own experience level. There are notable improvements in `Python 3` but since this is a small development exercise, the implications of this choice are negligible.
+This is a compatible version. The reason for choosing `Python 2` was due to my own preference. There are notable improvements in `Python 3` but since this is a small development exercise, the implications of this choice are negligible.
 
 
 ##### Modules Required 
@@ -53,11 +53,11 @@ sudo pip install -r <requirement file>
 
 ##### Options (Command Line Arguments)
 
-- `--posts [n] `, `-p [n]`  : Number of Posts to be Scraped
+- `--posts [n] `, `-p [n]` : Number of Posts to be Scraped
 - `--multi [n] `, `-m [n]` : Number of Processes to be Used
 - `--indent[n] `, `-i [n]` : Indentation Level for JSON Output 
 
-N.B. In all cases `[n]` must be an integer, for number of posts (`--posts`) this number should be between `0` and `MAX_POSTS`. 
+In all cases `[n]` must be an integer, for number of posts (`--posts`) this number should be between `0` and `MAX_POSTS`. 
 
 `MAX_POSTS` can be amended within the code only. It has been set to `200`, this can be increased to better test `multiprocessing` and thus the scalability. However, this is a simplistic use of multiple processes rather than sophisticated concurrency.
 
@@ -67,7 +67,7 @@ N.B. In all cases `[n]` must be an integer, for number of posts (`--posts`) this
 - Process count has been capped to `20` 
 - Indentation level has been capped to `10` 
 - If you exceed these values it will raise an ArgumentTypeError
-- They can only be amended via a code change 
+- The maximums can only be amended via a code change 
 - If you pass no arguments the default values will be used 
 - Defaults : `--posts [100]`, `--multi[0]`, `--indent[4]`
 
