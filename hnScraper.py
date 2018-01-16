@@ -38,7 +38,7 @@ class HNScraper:
 			self._num_pages = int(ceil(num_posts
 						/ self.PER_PAGE))
 
-	def fetch_content(self, num_threads):
+	def fetch_content(self, num_procs):
 		"""
 		Method will iterate over url/pages and add 
 		dictionary objects (stories) to an internal list 
@@ -47,15 +47,15 @@ class HNScraper:
 		iter_num = 1  
 		while(iter_num <= self._num_pages):
 			url = "{}?p={}".format(self.BASEURL, iter_num)
-			if num_threads:
+			if num_procs:
 				urls.append(url)
 			else:
 				table = get_html_table(get_request(url)) 
 				self.parse_stories(table)	
 			iter_num += 1
 
-		if num_threads:
-			p = Pool(num_threads)
+		if num_procs:
+			p = Pool(num_procs)
 			results = p.map(get_request, urls) 
 			map(self.parse_stories,
 				 map(get_html_table, results))
@@ -165,7 +165,7 @@ def parse_arguments():
 	parser.add_argument('--ident', '-i', metavar='n', type=int, 
 			    default=4, help='identation of JSON')
 	parser.add_argument('--multi', '-m', metavar='n', type=int, 
-			    default=0, help='number of threads')
+			    default=0, help='number of processes')
 	args = parser.parse_args()
 	return args.posts, args.multi, args.ident
 
@@ -173,10 +173,10 @@ def parse_arguments():
 # Main
 ###############################################################################
 def main():
-	NUM_POSTS, NUM_THREADS, INDENT = parse_arguments()
+	NUM_POSTS, NUM_PROCS, INDENT = parse_arguments()
 	try:
 		hnScraper = HNScraper(NUM_POSTS)
-		hnScraper.fetch_content(NUM_THREADS)
+		hnScraper.fetch_content(NUM_PROCS)
 		hnScraper.json_print(indentation=INDENT)
 	
 	except ValueError as ex:
