@@ -1,4 +1,4 @@
-Hacker News Scraper
+# Hacker News Scraper
 
 ![alt text](https://media-exp2.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAAveAAAAJDMzMGU1M2Q0LTA1YWYtNDViZC1hZGIzLTMwYTk2YjgyOTBkYQ.png "TrueLayer Logo")
 
