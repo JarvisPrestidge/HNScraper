@@ -75,7 +75,7 @@ In all cases `[n]` must be an integer, for number of posts (`--posts`) this numb
 ```
 python hnScraper.py --posts 200 -m 4 -i 2 
 ```
-Unit Tests take no arguments therefore we simple run the script :
+Unit Tests take no arguments therefore we simply run the script :
 ```
 python testHNScraper.py
 ...
