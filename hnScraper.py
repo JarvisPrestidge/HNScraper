@@ -123,28 +123,35 @@ def get_html_table(response):
 	
 	return tables[0]
 
+"""
+1. Find numbers from scraped data, add to list 
+2. Validate the list of numbers is non empty
+3. Select the valid number by index i 
+""" 
+find_numbers = lambda x: [int(s) for s in x.split() if s.isdigit()] 
+valid_number = lambda x: True if len(x) > 0 else False
+select_number = lambda x,i: x[i] if valid_number(x) else 0 
+
+#Check Whether Length of String is between 1 - 256 
+valid_string = lambda x: True if len(x) in range(1,257) else False 
+
+#Check Whether the URI has valid form 
+valid_uri = lambda x: True if validators.url(x) else False
+
 def validate_fields(story, points, comments) :	
 	"""
 	Validates data to meet requirements
 	"""
+	story['points'] = select_number(find_numbers(points), 0)
+	story['comments'] = select_number(find_numbers(comments), 0) 
 	
-	check_for_digits = lambda x: [int(s) for s in x.split()
-				  	     if s.isdigit()] 
-	points = check_for_digits(points)
-	comments = check_for_digits(comments) 
-
-	points = points[0] if len(points) > 0 else 0 
-	comments = comments[0] if len(comments) > 0 else 0 
-	
-	story['points'] , story['comments'] = points, comments 
-	
-	if len(story['title']) not in range(1,257):
+	if not valid_string(story['title']):
 		story['title'] = 'NA'
-	
-	if len(story['author']) not in range(1,257):
+
+	if not valid_string(story['author']):
 		story['author'] = 'NA'
 	
-	if not validators.url(story['uri']):
+	if not valid_uri(story['uri']): 
 		story['uri'] = 'NA'
 
 	return story 
