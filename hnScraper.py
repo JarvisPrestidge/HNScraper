@@ -153,6 +153,13 @@ def validate_fields(story, points, comments) :
 
 	return story 
 
+def input_validation(arg, arg_name, max):
+	"""
+	This method ensures we do not exceed argument maximums
+	"""
+	err_string = 'Number of {} Must Be < {}'.format(arg_name, max)
+	if arg > max: raise argparse.ArgumentTypeError(err_string) 
+
 def parse_arguments():
 	"""
 	This function parses command line arguments 
@@ -166,15 +173,9 @@ def parse_arguments():
 			    default=4, help='identation of JSON')
 	args = parser.parse_args()
 
-	if args.posts > MAX_POSTS:	
-		err_string = "Number of Posts Must Be < {}"
-		raise argparse.ArgumentTypeError(err_string.format(MAX_POSTS))
-	if args.multi > MAX_PROCS: 	
-		err_string = "Number of Processes Must Be < {}"
-		raise argparse.ArgumentTypeError(err_string.format(MAX_PROCS))
-	if args.indent > MAX_INDENT: 
-		err_string = "Indentation Level Must Be < {}"
-		raise argparse.ArgumentTypeError(err_string.format(MAX_INDENT))
+	input_validation(args.posts, 'Posts', MAX_POSTS)
+	input_validation(args.multi, 'Processes', MAX_PROCS)
+	input_validation(args.indent, 'Indentation', MAX_INDENT)
 
 	return args.posts, args.multi, args.indent
 
@@ -184,11 +185,10 @@ def parse_arguments():
 def main():
 	try:
 		NUM_POSTS, NUM_PROCS, INDENT = parse_arguments()
-		
 		hnScraper = HNScraper(NUM_POSTS)
 		hnScraper.fetch_content(NUM_PROCS)
 		hnScraper.json_print(indentation=INDENT)
-	
+
 	except argparse.ArgumentTypeError as ex:
 		err_string = 'Maximum Argument Exceeded \n{}'
 		print err_string.format(ex) 				
